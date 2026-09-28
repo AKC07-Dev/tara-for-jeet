@@ -64,6 +64,7 @@ function Gift() {
   const [activeStar, setActiveStar] = useState<number | null>(null);
   const [pressCount, setPressCount] = useState(0);
   const [letterOpen, setLetterOpen] = useState(false);
+  const [letterOpening, setLetterOpening] = useState(false);
   const [thinking, setThinking] = useState(false);
   const [celebrating, setCelebrating] = useState(false);
   const reducedMotion = useReducedMotion();
@@ -83,7 +84,8 @@ function Gift() {
     try { window.localStorage.setItem("jeet-tara-entered", "yes"); } catch { /* theatrical gate works without storage */ }
     go("welcome");
   };
-  const reset = () => { setQuizAnswers([]); setSeenLetters([]); setSeenStars([]); setPressCount(0); setLetterOpen(false); setThinking(false); setOpened(null); go("rules"); };
+  const reset = () => { setQuizAnswers([]); setSeenLetters([]); setSeenStars([]); setPressCount(0); setLetterOpen(false); setLetterOpening(false); setThinking(false); setOpened(null); go("rules"); };
+  const openLetter = () => { setLetterOpening(true); window.setTimeout(() => setLetterOpen(true), reducedMotion ? 0 : 800); };
   const press = () => { setPressCount((value) => value + 1); setCelebrating(true); window.setTimeout(() => setCelebrating(false), 1300); };
 
   return <main className={`story-shell ${night ? "story-night" : ""}`}>
@@ -198,7 +200,7 @@ function Gift() {
             <p className="text-sm text-muted-foreground mt-4">Some things are true even in the dark. Touch the stars.</p>
             <div className="relative w-full max-w-[700px] h-[310px] sm:h-[380px] mt-4" aria-label="Six stars with messages">
               <svg className="absolute inset-0 w-full h-full overflow-visible pointer-events-none" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-                {seenStars.length >= 4 && <motion.path initial={{ pathLength: 0, opacity: 0 }} animate={{ pathLength: 1, opacity: .52 }} transition={{ duration: 1.5 }} d="M16 30 L33 15 L51 31 L70 15 L86 30 L51 80 L16 30" fill="none" stroke="var(--gold)" strokeWidth=".18" />}
+                {seenStars.length >= 4 && <motion.path initial={{ pathLength: 0, opacity: 0 }} animate={{ pathLength: 1, opacity: .52 }} transition={{ duration: 1.5 }} d="M51 80 C37 66 16 49 16 30 C16 15 33 10 51 31 C69 10 86 15 86 30 C86 49 65 66 51 80" fill="none" stroke="var(--gold)" strokeWidth=".18" />}
               </svg>
               {starPositions.map((position, index) => <Button key={index} variant="quiet" size="icon" className={`star-point ${seenStars.includes(index) ? "active text-gold" : "text-night-foreground/70"}`} style={{ left: `${position.x}%`, top: `${position.y}%` }} aria-label={`Reveal star ${index + 1}`} title={`Star ${index + 1}`} onClick={() => { setActiveStar(index); setSeenStars((seen) => seen.includes(index) ? seen : [...seen, index]); }}><Star size={index === 5 ? 20 : 15} fill={seenStars.includes(index) ? "currentColor" : "none"} /></Button>)}
             </div>
@@ -227,8 +229,8 @@ function Gift() {
             <ChapterLabel number="08" title="the letter" />
             {!letterOpen ? <>
               <h1 className="story-title text-5xl sm:text-7xl mt-7">There's something I couldn't<br/><em>turn into a button.</em></h1>
-              <div className="envelope mt-14" aria-label="A sealed letter from Tara"><span className="envelope-seal">t</span></div>
-              <Button variant="story" size="story" className="mt-11" onClick={() => setLetterOpen(true)}>open it <Heart /></Button>
+              <div className={`envelope mt-14 ${letterOpening ? "open" : ""}`} aria-label="A sealed letter from Tara"><span className="envelope-seal">t</span></div>
+              <Button variant="story" size="story" className="mt-11" disabled={letterOpening} onClick={openLetter}>open it <Heart /></Button>
             </> : <motion.div initial={{ opacity: 0, y: 30, rotate: -2 }} animate={{ opacity: 1, y: 0, rotate: 0 }} transition={{ duration: .85 }} className="letter-paper w-full max-w-[660px] text-left px-7 sm:px-14 py-10 sm:py-14 mt-7">
               <span className="story-eyebrow text-rose">a letter, just for you</span>
               <h1 className="font-display text-5xl sm:text-6xl mt-5">Dear Jeet,</h1>

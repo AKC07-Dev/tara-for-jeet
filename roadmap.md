@@ -1,3 +1,3 @@
-- [ ] Build the private entry and complete guided nine-part journey.
-- [ ] Add original bear illustrations, polished motion, and mobile styling.
-- [ ] Verify entry, interactions, finale, and responsive presentation.
+- [x] Build the private entry and complete guided nine-part journey.
+- [x] Add original bear illustrations, polished motion, and mobile styling.
+- [x] Verify entry, interactions, finale, and responsive presentation.
