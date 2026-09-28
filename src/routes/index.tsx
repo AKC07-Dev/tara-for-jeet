@@ -76,7 +76,7 @@ function Gift() {
   useEffect(() => { window.scrollTo({ top: 0, behavior: "smooth" }); }, [stage]);
   const go = (to: Stage) => { setStep(0); setFeedback(""); setStage(to); };
   const next = () => { const index = journey.indexOf(stage); if (index >= 0) go(journey[index + 1] ?? "final"); };
-  const back = () => { const index = journey.indexOf(stage); if (index > 0) go(journey[index - 1]); else if (index === 0) go("welcome"); };
+  const back = () => { const index = journey.indexOf(stage); if (index > 0) go(journey[index - 1] ?? "welcome"); else if (index === 0) go("welcome"); };
   const enter = () => {
     if (password.trim().toLowerCase() !== "tara") { setPasswordError(password ? "Hmm. Try the name of the person who made this for you." : "A little hint: you know her name."); return; }
     setPasswordError("");
@@ -97,7 +97,7 @@ function Gift() {
       {chapter >= 0 && <div className="absolute top-[79px] left-9 right-9 sm:left-14 sm:right-14 h-px bg-border/60 z-10"><motion.div className="h-px bg-rose" animate={{ width: `${((chapter + 1) / 9) * 100}%` }} transition={{ duration: .7 }} /></div>}
       {chapter >= 0 && <Button variant="quiet" size="icon" aria-label="Previous chapter" title="Previous chapter" onClick={back} className="absolute bottom-5 left-8 sm:left-14 z-10"><ArrowLeft /></Button>}
       <AnimatePresence mode="wait">
-        <motion.div key={stage} className="story-content" initial={reducedMotion ? false : { opacity: 0, y: 24, filter: "blur(5px)" }} animate={{ opacity: 1, y: 0, filter: "blur(0px)" }} exit={reducedMotion ? undefined : { opacity: 0, y: -18, filter: "blur(4px)" }} transition={{ duration: .55, ease: [0.22, 1, 0.36, 1] }}>
+        <motion.div key={stage} className="story-content" initial={reducedMotion ? false : { opacity: 0, y: 24, filter: "blur(5px)" }} animate={{ opacity: 1, y: 0, filter: "blur(0px)" }} exit={reducedMotion ? {} : { opacity: 0, y: -18, filter: "blur(4px)" }} transition={{ duration: .55, ease: [0.22, 1, 0.36, 1] }}>
           {stage === "intro" && <section className="w-full max-w-[680px] text-center flex flex-col items-center">
             <p className="story-script text-rose text-4xl sm:text-5xl -rotate-6">pssst...</p>
             <div className="mt-7 h-px w-16 bg-rose/50" />
@@ -132,12 +132,12 @@ function Gift() {
             <div className="story-rule mt-10" />
             <AnimatePresence mode="wait"><motion.div key={step} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="min-h-[230px] w-full flex flex-col items-center justify-center">
               <span className="story-eyebrow text-rose mb-5">question {step + 1} of {rules.length}</span>
-              <p className="font-display text-[clamp(2rem,6vw,3.6rem)] leading-[1.07] max-w-[580px]">{rules[step].question}</p>
+              <p className="font-display text-[clamp(2rem,6vw,3.6rem)] leading-[1.07] max-w-[580px]">{rules[step]?.question}</p>
             </motion.div></AnimatePresence>
             <p role="status" className="story-script text-rose text-xl min-h-8 mb-4">{feedback}</p>
             <div className="flex flex-wrap justify-center gap-3">
-              <Button variant="story" size="touch" onClick={() => { setFeedback(rules[step].yes); window.setTimeout(() => { if (step < rules.length - 1) { setStep(step + 1); setFeedback(""); } else next(); }, 1100); }}>I agree <Check /></Button>
-              <Button variant="paper" size="touch" onClick={() => setFeedback(rules[step].no)}>hmm, no</Button>
+              <Button variant="story" size="touch" onClick={() => { setFeedback(rules[step]?.yes ?? "Good."); window.setTimeout(() => { if (step < rules.length - 1) { setStep(step + 1); setFeedback(""); } else next(); }, 1100); }}>I agree <Check /></Button>
+              <Button variant="paper" size="touch" onClick={() => setFeedback(rules[step]?.no ?? "Try again.")}>hmm, no</Button>
             </div>
             <div className="story-rule mt-10" />
             <Bear mood="heart" className="w-16 mt-4" />
@@ -148,9 +148,9 @@ function Gift() {
               <h1 className="story-title text-5xl sm:text-7xl mt-8">Just a few<br/><em>questions.</em></h1>
               <span className="story-eyebrow text-muted-foreground mt-8">{step + 1} / {quiz.length}</span>
               <AnimatePresence mode="wait"><motion.div key={step} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -16 }} className="w-full">
-                <p className="font-display text-3xl sm:text-4xl mt-7 mb-8">{quiz[step].q}</p>
+                <p className="font-display text-3xl sm:text-4xl mt-7 mb-8">{quiz[step]?.q}</p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full">
-                  {quiz[step].options.map((option, index) => <Button key={option} variant="paper" size="touch" className="!h-auto min-h-17 whitespace-normal text-left justify-start px-5 py-4 leading-5" onClick={() => { setQuizAnswers([...quizAnswers, index]); setStep(step + 1); }}>{String.fromCharCode(65 + index)}. &nbsp;{option}</Button>)}
+                  {(quiz[step]?.options ?? []).map((option, index) => <Button key={option} variant="paper" size="touch" className="!h-auto min-h-17 whitespace-normal text-left justify-start px-5 py-4 leading-5" onClick={() => { setQuizAnswers([...quizAnswers, index]); setStep(step + 1); }}>{String.fromCharCode(65 + index)}. &nbsp;{option}</Button>)}
                 </div>
               </motion.div></AnimatePresence>
             </> : <motion.div initial={{ opacity: 0, scale: .95 }} animate={{ opacity: 1, scale: 1 }} className="flex flex-col items-center">
@@ -182,11 +182,11 @@ function Gift() {
             </div>
             <Button variant="quiet" size="touch" className="mt-7" onClick={next}>continue when you're ready <ArrowRight /></Button>
             <AnimatePresence>{opened !== null && <motion.div className="fixed inset-0 z-30 flex items-center justify-center bg-night/70 px-5 py-8" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setOpened(null)}>
-              <motion.div role="dialog" aria-modal="true" aria-label={letters[opened].title} className="letter-paper w-full max-w-[480px] relative px-8 sm:px-12 py-11 sm:py-14 text-left" initial={{ y: 30, rotate: -2, opacity: 0 }} animate={{ y: 0, rotate: 0, opacity: 1 }} exit={{ y: 25, opacity: 0 }} onClick={(event) => event.stopPropagation()}>
+              <motion.div role="dialog" aria-modal="true" aria-label={letters[opened]?.title ?? "A little note"} className="letter-paper w-full max-w-[480px] relative px-8 sm:px-12 py-11 sm:py-14 text-left" initial={{ y: 30, rotate: -2, opacity: 0 }} animate={{ y: 0, rotate: 0, opacity: 1 }} exit={{ y: 25, opacity: 0 }} onClick={(event) => event.stopPropagation()}>
                 <span className="story-eyebrow text-rose">a note from tara</span>
-                <h2 className="font-display text-4xl sm:text-5xl mt-5 leading-none">{letters[opened].title.toLowerCase()}</h2>
+                <h2 className="font-display text-4xl sm:text-5xl mt-5 leading-none">{letters[opened]?.title ?? "A little note".toLowerCase()}</h2>
                 <div className="story-rule my-7" />
-                <p className="font-display text-[25px] sm:text-[29px] leading-[1.25]">{letters[opened].message}</p>
+                <p className="font-display text-[25px] sm:text-[29px] leading-[1.25]">{letters[opened]?.message}</p>
                 <p className="story-script text-rose text-3xl mt-8">— tara ♡</p>
                 <Button variant="quiet" size="touch" className="mt-7 -ml-3" onClick={() => setOpened(null)}>close this note <ArrowRight /></Button>
               </motion.div>
