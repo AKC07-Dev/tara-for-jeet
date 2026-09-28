@@ -184,7 +184,7 @@ function Gift() {
             <AnimatePresence>{opened !== null && <motion.div className="fixed inset-0 z-30 flex items-center justify-center bg-night/70 px-5 py-8" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setOpened(null)}>
               <motion.div role="dialog" aria-modal="true" aria-label={letters[opened]?.title ?? "A little note"} className="letter-paper w-full max-w-[480px] relative px-8 sm:px-12 py-11 sm:py-14 text-left" initial={{ y: 30, rotate: -2, opacity: 0 }} animate={{ y: 0, rotate: 0, opacity: 1 }} exit={{ y: 25, opacity: 0 }} onClick={(event) => event.stopPropagation()}>
                 <span className="story-eyebrow text-rose">a note from tara</span>
-                <h2 className="font-display text-4xl sm:text-5xl mt-5 leading-none">{letters[opened]?.title ?? "A little note".toLowerCase()}</h2>
+                <h2 className="font-display text-4xl sm:text-5xl mt-5 leading-none">{(letters[opened]?.title ?? "A little note").toLowerCase()}</h2>
                 <div className="story-rule my-7" />
                 <p className="font-display text-[25px] sm:text-[29px] leading-[1.25]">{letters[opened]?.message}</p>
                 <p className="story-script text-rose text-3xl mt-8">— tara ♡</p>
